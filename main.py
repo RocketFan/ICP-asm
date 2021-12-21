@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from icp import ICP
 
 if __name__ == "__main__":
-    R = utils.get_2D_R(np.radians(100))
+    R = utils.get_2D_R(np.radians(40))
     T = utils.get_2D_T(10, -10)
     func = utils.get_2D_func([0.00003, 0.0002, 0, 0.001, 1])
 
@@ -20,4 +20,4 @@ if __name__ == "__main__":
 
         print(i)
 
-    plt.show()
+    # plt.show()

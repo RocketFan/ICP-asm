@@ -3,8 +3,6 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import utils
 
-from mpl_toolkits.mplot3d import Axes3D
-
 sns.set_theme(style="darkgrid")
 
 
@@ -14,8 +12,6 @@ class ICP:
         self.pc_moved = np.array(pc_moved)
         self.pc_match = []
         self.dim = self.pc_true.shape[1]
-        fig = plt.figure()
-        self.ax = Axes3D(fig)
 
     def match_point_to_point(self):
         self.pc_match = []
