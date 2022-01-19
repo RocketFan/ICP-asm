@@ -48,8 +48,8 @@ class ICP:
         sns.scatterplot(x=self.pc_moved[:, 0], y=self.pc_moved[:, 1])
 
         # Visualize match points
-        # for p_moved, p_match in zip(self.pc_moved, self.pc_match):
-        #     sns.lineplot(x=[p_moved[0], p_match[0]], y=[p_moved[1], p_match[1]])
+        for p_moved, p_match in zip(self.pc_moved, self.pc_match):
+            sns.lineplot(x=[p_moved[0], p_match[0]], y=[p_moved[1], p_match[1]])
 
         plt.axis('equal')
         plt.pause(0.0001)

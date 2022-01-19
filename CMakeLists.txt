@@ -12,7 +12,11 @@ if(APPLE)
 endif(APPLE)
 
 if(WIN32)
-	string(APPEND CMAKE_ASM_NASM_FLAGS "-dWIN32=1")
+	if(CMAKE_CL_64)
+		string(APPEND CMAKE_ASM_NASM_FLAGS "-dWIN32=1")
+	else()
+		string(APPEND CMAKE_ASM_NASM_FLAGS "-fwin64")
+	endif(CMAKE_CL_64)
 endif(WIN32)
 
 # SET(CMAKE_ASM_FLAGS "${CFLAGS} -x assembler-with-cpp")

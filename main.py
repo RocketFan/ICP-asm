@@ -6,10 +6,10 @@ from icp import ICP
 
 if __name__ == "__main__":
     R = utils.get_2D_R(np.radians(60))
-    T = utils.get_2D_T(10, -10)
+    T = utils.get_2D_T(0, 0)
     func = utils.get_2D_func([0.00003, 0.0002, 0, 0.001, 1])
 
-    pc_1 = np.array([[x, 2*np.sin(x), 1] for x in range(-40, 25, 1)])
+    pc_1 = np.array([[x, func(x), 1] for x in range(-40, 25, 1)])
     pc_2 = np.dot(np.dot(pc_1, R.transpose()), T.transpose())
     icp = ICP(pc_1[:, :2], pc_2[:, :2])
 
