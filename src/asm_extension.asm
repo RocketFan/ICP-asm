@@ -7,8 +7,8 @@ section .text
 add42:
     push rbp
     mov rbp, rsp
-    movq xmm0, rcx
-    mov rax, rcx
+    movq xmm0, rdi
+    mov rax, rdi
     add rax, 42
     mov rsp, rbp
     pop rbp

@@ -22,4 +22,7 @@ endif(WIN32)
 # SET(CMAKE_ASM_FLAGS "${CFLAGS} -x assembler-with-cpp")
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
 
+add_subdirectory(lib)
+add_subdirectory(src)
+
 add_executable(ex1 src/main.cpp src/asm_extension.asm.h src/asm_extension.asm)

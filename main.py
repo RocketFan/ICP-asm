@@ -1,10 +1,13 @@
 import numpy as np
 import utils
 import matplotlib.pyplot as plt
+from build.src.asm_extension import add42
 
 from icp import ICP
 
 if __name__ == "__main__":
+    print("Assembler: ", add42(10))
+
     R = utils.get_2D_R(np.radians(60))
     T = utils.get_2D_T(0, 0)
     func = utils.get_2D_func([0.00003, 0.0002, 0, 0.001, 1])
