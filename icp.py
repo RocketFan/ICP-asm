@@ -3,21 +3,28 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import utils
 
+from build.src.asm_extension import find_closest_point
+
 sns.set_theme(style="darkgrid")
 
 class ICP:
-    def __init__(self, pc_true, pc_moved):
-        self.pc_true = np.array(pc_true)
-        self.pc_moved = np.array(pc_moved)
+    def __init__(self, pc_real, pc_moved):
+        self.pc_real = np.array(pc_real, dtype=np.float32)
+        self.pc_moved = np.array(pc_moved, dtype=np.float32)
         self.pc_match = []
-        self.dim = self.pc_true.shape[1]
+        self.dim = self.pc_real.shape[1]
 
     def match_point_to_point(self):
         self.pc_match = []
 
         for p in self.pc_moved:
+            p_test = np.array([432443214, 43241])
+            print("Python: ", p_test)
+            find_closest_point(p_test, self.pc_real)
+            print("Python 2: ", p_test)
+
             p_match = min(
-                self.pc_true, key=lambda k: np.linalg.norm(p - k))
+                self.pc_real, key=lambda k: np.linalg.norm(p - k))
             self.pc_match.append(p_match)
 
     def solve_SVD(self):
@@ -44,7 +51,7 @@ class ICP:
 
     def visualize_2D_results(self):
         plt.clf()
-        sns.scatterplot(x=self.pc_true[:, 0], y=self.pc_true[:, 1])
+        sns.scatterplot(x=self.pc_real[:, 0], y=self.pc_real[:, 1])
         sns.scatterplot(x=self.pc_moved[:, 0], y=self.pc_moved[:, 1])
 
         # Visualize match points
