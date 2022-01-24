@@ -29,8 +29,13 @@ py::array_t<float> find_closest_point(py::array_t<float, py::array::c_style | py
 
     std::cout << "C++ 2: ";
 
-    for (int i = 0; i < buf_point_list.size(); i++)
-        std::cout << " " << ptr_point_list[i];
+    for (int i = 0; i < buf_point_list.size(); i += buf_point_list.shape(1))
+    {
+        for (int j = 0; j < buf_point_list.shape(1); j++)
+            std::cout << " " << ptr_point_list[i + j];
+
+        std::cout << "\n";
+    }
 
 
     std::cout << "\n";
