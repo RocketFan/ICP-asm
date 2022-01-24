@@ -2,13 +2,13 @@ section .data
     abc: dd 100
 
 section .text
-    global find_closest_point
+    global _find_closest_point
 
 _find_closest_point:
     push rbp
     mov rbp, rsp
 
-    movq xmm0, [rdi]
+    ; movq xmm0, [rdi]
 
     mov rsp, rbp
     pop rbp

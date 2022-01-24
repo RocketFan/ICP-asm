@@ -18,10 +18,7 @@ class ICP:
         self.pc_match = []
 
         for p in self.pc_moved:
-            p_test = np.array([432443214, 43241])
-            print("Python: ", p_test)
-            find_closest_point(p_test, self.pc_real)
-            print("Python 2: ", p_test)
+            print("Python ptrs: ", find_closest_point(p, self.pc_real))
 
             p_match = min(
                 self.pc_real, key=lambda k: np.linalg.norm(p - k))

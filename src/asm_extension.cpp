@@ -15,32 +15,34 @@ py::array_t<float> find_closest_point(py::array_t<float, py::array::c_style | py
     auto buf_point_list = point_list.mutable_unchecked<2>();
     float* ptr_point_list = point_list.mutable_data(0);
 
-    ptr_point[0] = 0;
-
     std::cout << "Size 1: " << buf_point.size() << std::endl;
     std::cout << "Size 2: " << buf_point_list.size() << std::endl;
 
-    std::cout << "C++: ";
+    std::cout << "C++ ptrs: " << ptr_point[0] << " " << ptr_point[1] << std::endl;
 
-    for (int i = 0; i < buf_point.size(); i++)
-        std::cout << " " << ptr_point[i];
+    auto closest_point = _find_closest_point(ptr_point, ptr_point_list, buf_point_list.size());
 
-    std::cout << "\n";
+    // std::cout << "C++: ";
 
-    std::cout << "C++ 2: ";
+    // for (int i = 0; i < buf_point.size(); i++)
+    //     std::cout << " " << ptr_point[i];
 
-    for (int i = 0; i < buf_point_list.size(); i += buf_point_list.shape(1))
-    {
-        for (int j = 0; j < buf_point_list.shape(1); j++)
-            std::cout << " " << ptr_point_list[i + j];
+    // std::cout << "\n";
 
-        std::cout << "\n";
-    }
+    // std::cout << "C++ 2: ";
+
+    // for (int i = 0; i < buf_point_list.size(); i += buf_point_list.shape(1))
+    // {
+    //     for (int j = 0; j < buf_point_list.shape(1); j++)
+    //         std::cout << " " << ptr_point_list[i + j];
+
+    //     std::cout << "\n";
+    // }
 
 
-    std::cout << "\n";
+    // std::cout << "\n";
 
-    return py::array_t<float>();
+    return py::array_t<float>({2}, closest_point);
 }
 
 PYBIND11_MODULE(asm_extension, m)
