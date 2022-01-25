@@ -24,3 +24,5 @@ endif(WIN32)
 
 add_subdirectory(lib)
 add_subdirectory(src)
+
+add_executable(ex1 src/main.cpp src/asm_extension.asm.h src/asm_extension.asm)

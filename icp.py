@@ -18,11 +18,13 @@ class ICP:
         self.pc_match = []
 
         for p in self.pc_moved:
-            print("Python ptrs: ", find_closest_point(p, self.pc_real))
-
-            p_match = min(
-                self.pc_real, key=lambda k: np.linalg.norm(p - k))
+            p_match = find_closest_point(p, self.pc_real)
+            print(p_match)
             self.pc_match.append(p_match)
+
+            # p_match = min(
+            #     self.pc_real, key=lambda k: np.linalg.norm(p - k))
+            # self.pc_match.append(p_match)
 
     def solve_SVD(self):
         # Calc H matrix for SVD

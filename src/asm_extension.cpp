@@ -39,8 +39,18 @@ py::array_t<float> find_closest_point(py::array_t<float, py::array::c_style | py
     //     std::cout << "\n";
     // }
 
-
     // std::cout << "\n";
+
+    auto cl_np = py::array_t<float>({2}, closest_point);
+    auto buf_cl_np = cl_np.mutable_unchecked<1>();
+    float* ptr_cl_np = buf_cl_np.mutable_data(0);
+
+    std::cout << "CL Numpy: ";
+
+    for (int i = 0; i < buf_cl_np.size(); i++)
+        std::cout << " " << ptr_cl_np[i];
+
+    std::cout << "\n";
 
     return py::array_t<float>({2}, closest_point);
 }
