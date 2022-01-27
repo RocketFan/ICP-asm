@@ -3,28 +3,31 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import utils
 
-from build.src.asm_extension import find_closest_point
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 sns.set_theme(style="darkgrid")
+
 
 class ICP:
     def __init__(self, pc_real, pc_moved):
         self.pc_real = np.array(pc_real, dtype=np.float32)
         self.pc_moved = np.array(pc_moved, dtype=np.float32)
-        self.pc_match = []
+        self.pc_match = np.empty(self.pc_moved.shape)
         self.dim = self.pc_real.shape[1]
 
     def match_point_to_point(self):
-        self.pc_match = []
+        with ThreadPoolExecutor(max_workers=20) as executor:
+            futures = {executor.submit(
+                self.find_closest_point, p, self.pc_real, i) for i, p in enumerate(self.pc_moved)}
 
-        for p in self.pc_moved:
-            p_match = find_closest_point(p, self.pc_real)
-            print(p_match)
-            self.pc_match.append(p_match)
+            for future in as_completed(futures):
+                result = future.result()
+                self.pc_match[result[1]] = result[0]
 
-            # p_match = min(
-            #     self.pc_real, key=lambda k: np.linalg.norm(p - k))
-            # self.pc_match.append(p_match)
+    def find_closest_point(self, point, points_list, index):
+        p_closest = min(points_list, key=lambda k: np.linalg.norm(point - k))
+
+        return p_closest, index
 
     def solve_SVD(self):
         # Calc H matrix for SVD
@@ -43,7 +46,7 @@ class ICP:
         T = utils.get_2D_T(t[0], t[1])
 
         # Transform moved points
-        pc_moved_rotated = np.dot(self.pc_moved, R) 
+        pc_moved_rotated = np.dot(self.pc_moved, R)
         pc_moved_rotated = np.c_[pc_moved_rotated,
                                  np.ones(self.pc_moved.shape[0])]
         self.pc_moved = np.dot(pc_moved_rotated, T.transpose())[:, :2]

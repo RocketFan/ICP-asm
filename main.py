@@ -3,6 +3,7 @@ import utils
 import matplotlib.pyplot as plt
 
 from icp import ICP
+from icp_asm import ICPAsm
 
 if __name__ == "__main__":
     R = utils.get_2D_R(np.radians(60))
@@ -11,7 +12,7 @@ if __name__ == "__main__":
 
     pc_1 = np.array([[x, func(x), 1] for x in range(-40, 25, 1)])
     pc_2 = np.dot(np.dot(pc_1, R.transpose()), T.transpose())
-    icp = ICP(pc_1[:, :2], pc_2[:, :2])
+    icp = ICPAsm(pc_1[:, :2], pc_2[:, :2])
 
     for i in range(0, 100):
         icp.match_point_to_point()

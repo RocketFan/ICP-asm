@@ -46,7 +46,7 @@ _find_closest_point:
         movss xmm2, xmm1
         cmpltss xmm1, xmm3
         movq [rel bool], xmm1
-        cmp [rel bool], dword 0
+        cmp dword [rel bool], dword 0
         je next1
 
         movss xmm3, xmm2
