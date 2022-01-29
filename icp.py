@@ -1,11 +1,10 @@
 import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
 import utils
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-sns.set_theme(style="darkgrid")
+from PyQt5.QtChart import QChart, QLineSeries, QScatterSeries
+from PyQt5.QtCore import QPointF
 
 
 class ICP:
@@ -14,6 +13,15 @@ class ICP:
         self.pc_moved = np.array(pc_moved, dtype=np.float32)
         self.pc_match = np.empty(self.pc_moved.shape)
         self.dim = self.pc_real.shape[1]
+        self.iteration = 0
+
+    def next(self, chart):
+        self.match_point_to_point()
+        self.solve_SVD()
+        self.visualize_2D_results(chart)
+        self.iteration += 1
+
+        print(self.iteration)
 
     def match_point_to_point(self):
         with ThreadPoolExecutor(max_workers=20) as executor:
@@ -51,14 +59,22 @@ class ICP:
                                  np.ones(self.pc_moved.shape[0])]
         self.pc_moved = np.dot(pc_moved_rotated, T.transpose())[:, :2]
 
-    def visualize_2D_results(self):
-        plt.clf()
-        sns.scatterplot(x=self.pc_real[:, 0], y=self.pc_real[:, 1])
-        sns.scatterplot(x=self.pc_moved[:, 0], y=self.pc_moved[:, 1])
+    def visualize_2D_results(self, chart: QChart):
+        chart.removeAllSeries()
+
+        qt_pc_real = [QPointF(x, y) for x, y in self.pc_real]
+        qt_pc_moved = [QPointF(x, y) for x, y in self.pc_moved]
+        qt_pc_match = [QPointF(x, y) for x, y in self.pc_match]
+
+        series_pc_real = QScatterSeries()
+        series_pc_moved = QScatterSeries()
+
+        series_pc_real.append(qt_pc_real)
+        series_pc_moved.append(qt_pc_moved)
+
+        chart.addSeries(series_pc_real)
+        chart.addSeries(series_pc_moved)
 
         # Visualize match points
         # for p_moved, p_match in zip(self.pc_moved, self.pc_match):
         #     sns.lineplot(x=[p_moved[0], p_match[0]], y=[p_moved[1], p_match[1]])
-
-        plt.axis('equal')
-        plt.pause(0.0001)
