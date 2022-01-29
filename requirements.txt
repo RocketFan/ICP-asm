@@ -1,3 +1,7 @@
 numpy
 seaborn
 matplotlib
+
+# PyQt
+PyQt5
+pyqtchart
