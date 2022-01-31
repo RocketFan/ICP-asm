@@ -1,10 +1,11 @@
+from matplotlib.pyplot import plot
 import numpy as np
 import utils
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from PyQt5.QtChart import QChart, QLineSeries, QScatterSeries
-from PyQt5.QtCore import QPointF
+from PyQt5.QtCore import QPointF, Qt
 
 
 class ICP:
@@ -14,14 +15,13 @@ class ICP:
         self.pc_match = np.empty(self.pc_moved.shape)
         self.dim = self.pc_real.shape[1]
         self.iteration = 0
+        self.offset = 5
 
     def next(self, chart):
+        self.iteration += 1
         self.match_point_to_point()
         self.solve_SVD()
         self.visualize_2D_results(chart)
-        self.iteration += 1
-
-        print(self.iteration)
 
     def match_point_to_point(self):
         with ThreadPoolExecutor(max_workers=20) as executor:
@@ -66,8 +66,22 @@ class ICP:
         qt_pc_moved = [QPointF(x, y) for x, y in self.pc_moved]
         qt_pc_match = [QPointF(x, y) for x, y in self.pc_match]
 
+        x_range, y_range = self.get_axis_ranges()
+
+        axis_x = chart.axisX()
+        axis_x.setRange(x_range[0] - self.offset, x_range[1] + self.offset)
+
+        axis_y = chart.axisY()
+        axis_y.setRange(y_range[0] - self.offset, y_range[1] + self.offset)
+
         series_pc_real = QScatterSeries()
         series_pc_moved = QScatterSeries()
+
+        series_pc_real.setBorderColor(Qt.transparent)
+        series_pc_moved.setBorderColor(Qt.transparent)
+
+        series_pc_real.setMarkerSize(7)
+        series_pc_moved.setMarkerSize(7)
 
         series_pc_real.append(qt_pc_real)
         series_pc_moved.append(qt_pc_moved)
@@ -75,6 +89,42 @@ class ICP:
         chart.addSeries(series_pc_real)
         chart.addSeries(series_pc_moved)
 
+        series_pc_real.attachAxis(axis_x)
+        series_pc_real.attachAxis(axis_y)
+        series_pc_moved.attachAxis(axis_x)
+        series_pc_moved.attachAxis(axis_y)
+
         # Visualize match points
-        # for p_moved, p_match in zip(self.pc_moved, self.pc_match):
-        #     sns.lineplot(x=[p_moved[0], p_match[0]], y=[p_moved[1], p_match[1]])
+        if self.iteration != 0:
+            for p_moved, p_match in zip(qt_pc_moved, qt_pc_match):
+                series_line = QLineSeries()
+                series_line.append([p_moved, p_match])
+
+                chart.addSeries(series_line)
+
+                series_line.attachAxis(axis_x)
+                series_line.attachAxis(axis_y)
+
+    def get_axis_ranges(self):
+        min_x1 = np.min(self.pc_real[:, 0])
+        min_x2 = np.min(self.pc_moved[:, 0])
+        max_x1 = np.max(self.pc_real[:, 0])
+        max_x2 = np.max(self.pc_moved[:, 0])
+
+        min_y1 = np.min(self.pc_real[:, 1])
+        min_y2 = np.min(self.pc_moved[:, 1])
+        max_y1 = np.max(self.pc_real[:, 1])
+        max_y2 = np.max(self.pc_moved[:, 1])
+
+        # Equel axis ranges
+        # min_xy = min([min_x1, min_x2, min_y1, min_y2])
+        # max_xy = max([max_x1, max_x2, max_y1, max_y2])
+
+        # return [[min_xy, max_xy], [min_xy, max_xy]]
+
+        min_x = min(min_x1, min_x2)
+        max_x = max(max_x1, max_x2)
+        min_y = min(min_y1, min_y2)
+        max_y = max(max_y1, max_y2)
+
+        return [[min_x, max_x], [min_y, max_y]]
