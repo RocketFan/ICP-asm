@@ -9,22 +9,22 @@ from PyQt5.QtCore import QPointF, Qt
 
 
 class ICP:
-    def __init__(self, pc_real, pc_moved):
+    def __init__(self, pc_real, pc_moved, threads):
         self.pc_real = np.array(pc_real, dtype=np.float32)
         self.pc_moved = np.array(pc_moved, dtype=np.float32)
         self.pc_match = np.empty(self.pc_moved.shape)
         self.dim = self.pc_real.shape[1]
         self.iteration = 0
-        self.offset = 5
+        self.threads = threads
 
     def next(self, chart):
         self.iteration += 1
         self.match_point_to_point()
-        self.solve_SVD()
         self.visualize_2D_results(chart)
+        self.solve_SVD()
 
     def match_point_to_point(self):
-        with ThreadPoolExecutor(max_workers=20) as executor:
+        with ThreadPoolExecutor(max_workers=self.threads) as executor:
             futures = {executor.submit(
                 self.find_closest_point, p, self.pc_real, i) for i, p in enumerate(self.pc_moved)}
 
@@ -61,6 +61,7 @@ class ICP:
 
     def visualize_2D_results(self, chart: QChart):
         chart.removeAllSeries()
+        offset = 5
 
         qt_pc_real = [QPointF(x, y) for x, y in self.pc_real]
         qt_pc_moved = [QPointF(x, y) for x, y in self.pc_moved]
@@ -69,10 +70,10 @@ class ICP:
         x_range, y_range = self.get_axis_ranges()
 
         axis_x = chart.axisX()
-        axis_x.setRange(x_range[0] - self.offset, x_range[1] + self.offset)
+        axis_x.setRange(x_range[0] - offset, x_range[1] + offset)
 
         axis_y = chart.axisY()
-        axis_y.setRange(y_range[0] - self.offset, y_range[1] + self.offset)
+        axis_y.setRange(y_range[0] - offset, y_range[1] + offset)
 
         series_pc_real = QScatterSeries()
         series_pc_moved = QScatterSeries()
