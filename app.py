@@ -8,8 +8,6 @@ import utils
 import numpy as np
 import pandas as pd
 
-from threading import Thread
-
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLineEdit, QLabel, QSlider, QCheckBox
 from PyQt5.QtChart import QChart, QChartView, QValueAxis
 from PyQt5.QtGui import QPainter, QIntValidator
@@ -69,7 +67,7 @@ class MainWindow(QMainWindow):
         button.setGeometry(110, 0, 100, 30)
 
         button.clicked.connect(self.reset)
-    
+
     def performance_button(self):
         button = QPushButton(self)
         button.setText("Test performance")
@@ -169,7 +167,7 @@ class MainWindow(QMainWindow):
                 results.append(end)
 
             df[str(threads)] = results
-            
+
         print(df)
 
     def init_icp(self, config):
@@ -177,7 +175,7 @@ class MainWindow(QMainWindow):
         T = utils.get_2D_T(config["x"], config["y"])
         func = utils.get_2D_func([0.0000003, 0.000002, 0, 0.00001, 1])
 
-        pc_1 = np.array([[x, func(x), 1] for x in range(-200, 200, 3)])
+        pc_1 = np.array([[x, func(x), 1] for x in range(-200, 200, 1)])
         pc_2 = np.dot(np.dot(pc_1, R.transpose()), T.transpose())
 
         if(config["is_asm"]):

@@ -1,12 +1,10 @@
-from matplotlib.pyplot import plot
 import numpy as np
 import utils
 
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from multiprocessing import Pool
 
 from PyQt5.QtChart import QChart, QLineSeries, QScatterSeries
 from PyQt5.QtCore import QPointF, Qt
-
 
 class ICP:
     def __init__(self, pc_real, pc_moved, threads):
@@ -24,18 +22,15 @@ class ICP:
         self.solve_SVD()
 
     def match_point_to_point(self):
-        with ThreadPoolExecutor(max_workers=self.threads) as executor:
-            futures = {executor.submit(
-                self.find_closest_point, p, self.pc_real, i) for i, p in enumerate(self.pc_moved)}
+        with Pool(self.threads) as pool:
+            args = [(p, self.pc_real) for p in self.pc_moved]
+            results = pool.starmap(self.find_closest_point, args)
+            self.pc_match = np.array(results)
 
-            for future in as_completed(futures):
-                result = future.result()
-                self.pc_match[result[1]] = result[0]
-
-    def find_closest_point(self, point, points_list, index):
+    def find_closest_point(self, point, points_list):
         p_closest = min(points_list, key=lambda k: np.linalg.norm(point - k))
-
-        return p_closest, index
+        
+        return p_closest
 
     def solve_SVD(self):
         # Calc H matrix for SVD
